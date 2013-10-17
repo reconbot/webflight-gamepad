@@ -92,9 +92,11 @@
 
   // This works in chrome but your gamepad must be plugged in when you open chrome
   var GamepadEmitter = function (opt) {
+    opt = opt || {};
+    this.deadZone = opt.deadZone === undefined ? 0.1 : opt.deadZone;
+
     this.gamepad = null;
     this.previousRead = {};
-
     // bind the read loop
     this.loop = this.loop.bind(this);
 
@@ -157,23 +159,37 @@
 
     previousRead.timestamp = gamepad.timestamp;
 
-    gamepad.buttons.forEach(function (button, index) {
+    gamepad.buttons.forEach(function (buttonValue, index) {
       var id = 'button-' + index;
-      if (previousRead[id] !== button) {
-        this.emit(id, button);
+      if (this.compareValues(previousRead[id], buttonValue)) {
+        this.emit(id, buttonValue);
       }
-      previousRead[id] = button;
+      previousRead[id] = buttonValue;
     }, this);
 
-    gamepad.axes.forEach(function (axes, index) {
+    gamepad.axes.forEach(function (axesValue, index) {
       var id = 'axes-' + index;
-      if (previousRead[id] !== axes) {
-        this.emit(id, axes);
+      if (this.compareValues(previousRead[id], axesValue)) {
+        this.emit(id, axesValue);
       }
-      previousRead[id] = axes;
+      previousRead[id] = axesValue;
     }, this);
 
     this.gamepad = gamepad;
+  };
+
+  GamepadEmitter.prototype.compareValues = function (previousValue, value) {
+    if (previousValue === undefined) {
+      return false;
+    }
+    if (Math.abs(previousValue) <= this.deadZone) {
+      previousValue = 0;
+    }
+    if (Math.abs(value) <= this.deadZone) {
+      value = 0;
+    }
+
+    return previousValue !== value;
   };
 
   window.GamepadEmitter = GamepadEmitter;
