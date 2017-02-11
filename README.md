@@ -1,6 +1,8 @@
 webflight-gamepad
 =================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/reconbot/webflight-gamepad.svg)](https://greenkeeper.io/)
+
 This is a plugin for the browser-based AR.Drone ground control station
 [webflight](http://eschnou.github.io/ardrone-webflight/) that lets you
 fly your drone with a joystick or gamepad.
